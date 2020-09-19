@@ -8,20 +8,27 @@ from tkinter import Tk, LabelFrame, Label, Button, Entry
 
 print(sys.platform)
 
+
 def set_shutdown_time():
-    # Valdate integer
     # Execute script at new datetime
 
-    minutes = int(shutdown_entry.get())
-    execution_time = datetime.now() + timedelta(minutes=minutes)
-    print(execution_time)
-    display_string = execution_time.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
-    shutdown_display_label.config(text=display_string)
+    try:
+        minutes = float(shutdown_entry.get())
+        execution_time = datetime.now() + timedelta(minutes=minutes)
+        display_string = execution_time.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
+        shutdown_display_label.config(text=display_string)
+    except ValueError:
+        print("Input is not a number.")
+
 
 def set_internet_time():
-    minutes = internet_entry.get()
-    print(minutes)
-    internet_display_label.config(text=f"{minutes} PM")
+    try:
+        minutes = float(internet_entry.get())
+        execution_time = datetime.now() + timedelta(minutes=minutes)
+        display_string = execution_time.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
+        internet_display_label.config(text=display_string)
+    except ValueError:
+        print("Input is not a number.")
 
 
 root = Tk()
@@ -42,15 +49,19 @@ shutdown_entry = Entry(shutdown_frame, width=5)
 shutdown_entry.grid(row=0, column=1)
 
 shutdown_minutes_label = Label(shutdown_frame, text="minutes.")
-shutdown_minutes_label.grid(row=0, column=2)
+shutdown_minutes_label.grid(row=0, column=2, sticky="w")
 
-shutdown_set_button = Button(shutdown_frame, text="SET", padx=10, command=set_shutdown_time)
+shutdown_set_button = Button(
+    shutdown_frame, text="SET", padx=10, command=set_shutdown_time
+)
 shutdown_set_button.grid(row=0, column=3, padx=[10, 0])
 
 shutdown_set_label = Label(shutdown_frame, text="Set for:", font=("Helvetica 12 bold"))
 shutdown_set_label.grid(row=1, column=0, columnspan=2, pady=[10, 0])
 
-shutdown_display_label = Label(shutdown_frame, width=7, text="8:00 PM", font=("Helvetica 12"))
+shutdown_display_label = Label(
+    shutdown_frame, width=7, font=("Helvetica 12")
+)
 shutdown_display_label.grid(row=1, column=2, pady=[10, 0])
 
 # Internet Timer Frame
@@ -64,19 +75,25 @@ internet_entry = Entry(internet_frame, width=5)
 internet_entry.grid(row=0, column=1)
 
 internet_minutes_label = Label(internet_frame, text="minutes.")
-internet_minutes_label.grid(row=0, column=2)
+internet_minutes_label.grid(row=0, column=2, sticky="w")
 
-internet_set_button = Button(internet_frame, text="SET", padx=10, command=set_internet_time)
+internet_set_button = Button(
+    internet_frame, text="SET", padx=10, command=set_internet_time
+)
 internet_set_button.grid(row=0, column=3, padx=[10, 0])
 
 internet_set_label = Label(internet_frame, text="Set for:", font=("Helvetica 12 bold"))
 internet_set_label.grid(row=1, column=0, columnspan=2, pady=[10, 0])
 
-internet_display_label = Label(internet_frame, width=7, text="8:00 PM", font=("Helvetica 12"))
+internet_display_label = Label(
+    internet_frame, width=7, font=("Helvetica 12")
+)
 internet_display_label.grid(row=1, column=2, pady=[10, 0])
 
 # Create Exit Button
-exit_button = Button(root, width=20, text="Exit", pady=10, command=root.quit)
+exit_button = Button(
+    root, width=20, text="Exit", pady=5, font=("Helvetica 12 bold"), command=root.quit
+)
 exit_button.grid(row=3, column=0, columnspan=2, pady=20)
 
 root.mainloop()
