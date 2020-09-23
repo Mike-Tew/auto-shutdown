@@ -1,29 +1,65 @@
-# Shutdown command
-# os.system("shutdown /s /t 1")
 import os
 import sys
+import subprocess
 from datetime import datetime, timedelta
 from threading import Timer
 from tkinter import Tk, LabelFrame, Label, Button, Entry
 
-print(sys.platform)
+global shutdown_id
+global wifi_id
+shutdown_id = 1
+wifi_id = 1
+
 
 def shutdown():
-    os.system("shutdown /s")
+    # os.system("shutdown /s")
+    print("Shutting down")
+
+
+def disable_wifi():
+    print("Disabling wifi")
+    wifi = subprocess.check_output(
+        "netsh interface show interface", stderr=subprocess.STDOUT, shell=True
+    )
+    lines = wifi.splitlines()
+    for i in range(len(lines)):
+        if b"Connected" in lines[i]:
+            interface = lines[i].split(None, 3)
+            interface = interface[3].decode("ASCII")
+            subprocess.call(
+                f'netsh interface set interface "{interface}" disable',
+                stderr=subprocess.STDOUT,
+                shell=True,
+            )
+
+
+def testing_after():
+    print(f"Shutting down")
+
+
+def testing():
+    print("Testing")
+    print(shutdown_id)
+    root.after_cancel(shutdown_id)
+
 
 def set_shutdown_time():
     """Take the user input and execute the shutdown script at the specified time"""
 
+    global shutdown_id
     try:
         minutes = float(shutdown_entry.get())
+        root.after_cancel(shutdown_id)
+
+        # Calculating input time and displaying it in the GUI
         execution_time = datetime.now() + timedelta(minutes=minutes)
         display_string = (
             execution_time.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
         )
         shutdown_display_label.config(text=display_string)
 
-
-        # Timer(10, shutdown).start()
+        # Shutdown countdown timer
+        shutdown_id = root.after(int(minutes * 60000), shutdown)
     except ValueError:
         print("Input is not a number.")
 
@@ -31,13 +67,20 @@ def set_shutdown_time():
 def set_internet_time():
     """Take the user input and execute the blocking script at the specified time"""
 
+    global wifi_id
     try:
         minutes = float(internet_entry.get())
+        root.after_cancel(wifi_id)
+
+        # Calculating input time and displaying it in th GUI
         execution_time = datetime.now() + timedelta(minutes=minutes)
         display_string = (
             execution_time.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
         )
         internet_display_label.config(text=display_string)
+
+        # Wifi countdown timer
+        wifi_id = root.after(int(minutes * 60000), disable_wifi)
     except ValueError:
         print("Input is not a number.")
 
@@ -74,7 +117,7 @@ shutdown_display_label = Label(shutdown_frame, width=7, font=("Helvetica 12"))
 shutdown_display_label.grid(row=1, column=2, pady=[10, 0])
 
 # Internet Timer Frame
-internet_frame = LabelFrame(root, text="Internet Timer", padx=20, pady=10)
+internet_frame = LabelFrame(root, text="Network Connections Timer", padx=20, pady=10)
 internet_frame.grid(row=1, column=1, padx=20)
 
 internet_timer_label = Label(internet_frame, text="Turn off in")
