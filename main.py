@@ -1,8 +1,6 @@
 import os
-import sys
 import subprocess
 from datetime import datetime, timedelta
-from threading import Timer
 from tkinter import Tk, LabelFrame, Label, Button, Entry
 
 global shutdown_id
@@ -12,12 +10,10 @@ wifi_id = 1
 
 
 def shutdown():
-    # os.system("shutdown /s")
-    print("Shutting down")
+    os.system("shutdown /s")
 
 
 def disable_wifi():
-    print("Disabling wifi")
     wifi = subprocess.check_output(
         "netsh interface show interface", stderr=subprocess.STDOUT, shell=True
     )
@@ -31,16 +27,6 @@ def disable_wifi():
                 stderr=subprocess.STDOUT,
                 shell=True,
             )
-
-
-def testing_after():
-    print(f"Shutting down")
-
-
-def testing():
-    print("Testing")
-    print(shutdown_id)
-    root.after_cancel(shutdown_id)
 
 
 def set_shutdown_time():
@@ -61,7 +47,7 @@ def set_shutdown_time():
         # Shutdown countdown timer
         shutdown_id = root.after(int(minutes * 60000), shutdown)
     except ValueError:
-        print("Input is not a number.")
+        pass
 
 
 def set_internet_time():
@@ -82,12 +68,11 @@ def set_internet_time():
         # Wifi countdown timer
         wifi_id = root.after(int(minutes * 60000), disable_wifi)
     except ValueError:
-        print("Input is not a number.")
+        pass
 
 
 root = Tk()
 root.title("Computer Shutdown")
-# root.geometry("500x300+200+200")
 
 title_label = Label(root, text="AUTO SHUTDOWN", font=("Helvetica 16 bold"))
 title_label.grid(row=0, column=0, columnspan=2, pady=[5, 0])
